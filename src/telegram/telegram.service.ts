@@ -73,18 +73,21 @@ export class TelegramService implements OnModuleInit {
             }
             await ctx.reply("⏳ لطفاً منتظر بمانید، در حال ساخت کانفیگ...");
             if (serviceType === 'openvpn') {
+               try{
                 const res1 = await axios.post('http://84.200.154.221:8001/telegram/config', {
                     ip: '192.142.18.225',
                     id: res.data.data.user.id,
                     month: months,
-                    title: "bop"
+                    title: "bp"
                 });
                 const config = res1.data.data
     
                 const buffer = Buffer.from(config.server_info, 'utf-8');
                 await ctx.replyWithDocument({ source: buffer, filename: `${config.title}.ovpn` });
                 await ctx.reply("✅ کانفیگ شما ساخته شد! برای اطلاعات بیشتر به پشتیبانی پیام دهید.");
-                
+            }catch{
+                await ctx.reply("✅ دوباره تلاش کنید");
+            }
             } else {
                 console.log("start wiregurd");
                 const res1 = await axios.post('http://84.200.154.221:8001/telegram/config', {
