@@ -10,13 +10,13 @@ export class TelegramService implements OnModuleInit {
     constructor(
 
     ) {
-        this.bot = new Telegraf('7897182934:AAFR8JohENrZaEaPo9jv5XO_fcTJ7pLf5zI');
+        this.bot = new Telegraf('7280621277:AAGVY9sEA8UiH2ksY6W1YSWLotQebyntWic');
     }
 
     async onModuleInit() {
         this.bot.start(async (ctx) => { 
             const chatId = ctx.message.chat.id;
-            const res = await axios.post('https://78.38.53.49:3020/telegram/start', {
+            const res = await axios.post('http://38.134.148.15:3020/tel/start', {
                 "chatId": chatId
             });
             await ctx.reply(`${chatId}`)
@@ -35,7 +35,7 @@ export class TelegramService implements OnModuleInit {
             const selected = ctx.message.text.includes('WireGuard') ? 'wireguard' : 'openvpn';
             const chatId = ctx.message.chat.id;
             this.userServiceType.set(chatId, selected);
-            const res = await axios.post('https://78.38.53.49:3020/telegram/balance', {
+            const res = await axios.post('http://38.134.148.15:3020/tel/start', {
                 "chatId": chatId
             });
             await ctx.reply(
@@ -43,7 +43,7 @@ export class TelegramService implements OnModuleInit {
                 Markup.keyboard([
                     ["2️⃣ دوماهه", "1️⃣ یک‌ماهه"],
                     ["6️⃣ شش‌ماهه", "3️⃣ سه‌ماهه"],
-                    [`💰 ${res.data.data.wallet.wallet_balance.toLocaleString('fa-IR')} هزارتومان`],
+                    [`💰 ${res.data.data.wallet_balance.toLocaleString('fa-IR')} هزارتومان`],
                     ["❌ لغو"]
                 ]).resize()
             );
@@ -52,11 +52,11 @@ export class TelegramService implements OnModuleInit {
         this.bot.hears(["1️⃣ یک‌ماهه", "2️⃣ دوماهه", "3️⃣ سه‌ماهه", "6️⃣ شش‌ماهه"], async (ctx) => {
             const chatId = ctx.message.chat.id;
             const serviceType = this.userServiceType.get(chatId) || 'wireguard'; 
-            console.log(serviceType);
 
-            const res = await axios.post('https://78.38.53.49:3020/telegram/balance', {
+            const res = await axios.post('http://38.134.148.15:3020/tel/start', {
                 "chatId": chatId
             });
+            
             let months = 1;
             switch (ctx.message.text) {
                 case "2️⃣ دوماهه": months = 2; break;
@@ -66,20 +66,22 @@ export class TelegramService implements OnModuleInit {
                 case "1️⃣2️⃣ دوازده‌ماهه": months = 12; break;
             }
 
-            const cost = Math.floor(months * res.data.data.user.account_price)
-            if (res.data.data.wallet.wallet_balance < cost) {
+            const cost = Math.floor(months * res.data.data.account_price)
+            if (res.data.data.wallet_balance < cost) {
                 await ctx.reply("❌ موجودی کیف پول شما کافی نیست. لطفاً ابتدا موجودی خود را افزایش دهید.");
                 return;
             }
             await ctx.reply("⏳ لطفاً منتظر بمانید، در حال ساخت کانفیگ...");
             if (serviceType === 'openvpn') {
+                
                try{
-                const res1 = await axios.post('https://78.38.53.49:3020/telegram/config', {
-                    ip: '38.134.148.15',
-                    id: res.data.data.user.id,
+                const res1 = await axios.post('http://38.134.148.15:3020/tel/config', {
+                    server_id: 27,
+                    id: res.data.data.id,
                     month: months,
                     title: "R"
                 });
+                
                 const config = res1.data.data
     
                 const buffer = Buffer.from(config.server_info, 'utf-8');
@@ -89,10 +91,9 @@ export class TelegramService implements OnModuleInit {
                 await ctx.reply("✅ دوباره تلاش کنید");
             }
             } else {
-                console.log("start wiregurd");
-                const res1 = await axios.post('https://78.38.53.49:3020/telegram/config', {
-                    ip: '213.159.73.194',
-                    id: res.data.data.user.id,
+                const res1 = await axios.post('http://38.134.148.15:3020/tel/config', {
+                    server_id: 26,
+                    id: res.data.data.id,
                     month: months,
                     title: "R"
                 });
@@ -110,7 +111,7 @@ export class TelegramService implements OnModuleInit {
         });
         this.bot.hears("❌ لغو", async (ctx) => {
                 const chatId = ctx.message.chat.id;
-                const res = await axios.post('https://78.38.53.49:3020/telegram/start', {
+                const res = await axios.post('http://38.134.148.15:3020/tel/start', {
                     "chatId": chatId
                 });
                 await ctx.reply(`${chatId}`)
@@ -131,3 +132,6 @@ export class TelegramService implements OnModuleInit {
         await this.bot.launch();
     }
 }
+
+
+
