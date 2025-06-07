@@ -16,7 +16,7 @@ export class TelegramService implements OnModuleInit {
     async onModuleInit() {
         this.bot.start(async (ctx) => { 
             const chatId = ctx.message.chat.id;
-            const res = await axios.post('http://84.200.154.221:8001/telegram/start', {
+            const res = await axios.post('https://78.38.53.49:3020/telegram/start', {
                 "chatId": chatId
             });
             await ctx.reply(`${chatId}`)
@@ -35,7 +35,7 @@ export class TelegramService implements OnModuleInit {
             const selected = ctx.message.text.includes('WireGuard') ? 'wireguard' : 'openvpn';
             const chatId = ctx.message.chat.id;
             this.userServiceType.set(chatId, selected);
-            const res = await axios.post('http://84.200.154.221:8001/telegram/balance', {
+            const res = await axios.post('https://78.38.53.49:3020/telegram/balance', {
                 "chatId": chatId
             });
             await ctx.reply(
@@ -54,7 +54,7 @@ export class TelegramService implements OnModuleInit {
             const serviceType = this.userServiceType.get(chatId) || 'wireguard'; 
             console.log(serviceType);
 
-            const res = await axios.post('http://84.200.154.221:8001/telegram/balance', {
+            const res = await axios.post('https://78.38.53.49:3020/telegram/balance', {
                 "chatId": chatId
             });
             let months = 1;
@@ -74,11 +74,11 @@ export class TelegramService implements OnModuleInit {
             await ctx.reply("⏳ لطفاً منتظر بمانید، در حال ساخت کانفیگ...");
             if (serviceType === 'openvpn') {
                try{
-                const res1 = await axios.post('http://84.200.154.221:8001/telegram/config', {
-                    ip: '192.142.18.225',
+                const res1 = await axios.post('https://78.38.53.49:3020/telegram/config', {
+                    ip: '38.134.148.15',
                     id: res.data.data.user.id,
                     month: months,
-                    title: "bp"
+                    title: "R"
                 });
                 const config = res1.data.data
     
@@ -90,11 +90,11 @@ export class TelegramService implements OnModuleInit {
             }
             } else {
                 console.log("start wiregurd");
-                const res1 = await axios.post('http://84.200.154.221:8001/telegram/config', {
+                const res1 = await axios.post('https://78.38.53.49:3020/telegram/config', {
                     ip: '213.159.73.194',
                     id: res.data.data.user.id,
                     month: months,
-                    title: "b"
+                    title: "R"
                 });
                 const config = res1.data.data
     
@@ -110,7 +110,7 @@ export class TelegramService implements OnModuleInit {
         });
         this.bot.hears("❌ لغو", async (ctx) => {
                 const chatId = ctx.message.chat.id;
-                const res = await axios.post('http://84.200.154.221:8001/telegram/start', {
+                const res = await axios.post('https://78.38.53.49:3020/telegram/start', {
                     "chatId": chatId
                 });
                 await ctx.reply(`${chatId}`)
